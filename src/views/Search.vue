@@ -76,7 +76,18 @@
         modal_loading:boolean = false;
         // 登陆
         toLogin(){
-
+            if (this.loginForm.username && this.loginForm.password){
+                API.postRequest('/api/eve/eve_login',this.loginForm).then( (success:any) =>{
+                    this.$Message.info('登录成功');
+                    this.topToolTip='以登录';
+                    this.$store.commit('setUserInfo',{userName:this.loginForm.username,token:success.token})
+                    this.modal = false;
+                }).catch(err => {
+                    this.$Message.error('登录信息有误，请重新登录')
+                })
+            } else {
+                this.$Message.info('用户名或密码格式不对！')
+            }
         }
         formInline:object = {
             domain: ''
@@ -90,6 +101,9 @@
             this.modal = true;
         }
         mounted() {
+            if (this.$store.state.userName){
+                this.topToolTip='以登录';
+            }
             let canvas:any = document.getElementById("cas");
             let ctx = canvas.getContext("2d");
             resize();
