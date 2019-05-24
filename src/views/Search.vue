@@ -1,6 +1,6 @@
-<style lang="less">
+<style lang="less" scoped>
+    // 在vue中如果页面中的使用带ID的dom，css要指定为scoped，否则会出现其他css乱码
     .main{
-
         position: absolute;
         top: 20%;
         left:0px;
@@ -24,7 +24,7 @@
 
 <template>
     <div>
-        <span style="float: right;padding-right: 30px;padding-top: 10px;color: gray;cursor: pointer" @click="login">{{topToolTip}}</span>
+        <span style="float: right;padding-right: 30px;padding-top: 10px;color: gray;cursor: pointer" @click="login($store.state.userName)">{{topToolTip}}</span>
         <div class="main">
         <h1>IPv6转换规模与复杂度检测工具</h1>
         <Form ref="formInline" :model="formInline"  inline style="margin-top: 4%">
@@ -32,7 +32,7 @@
                 <Input type="text" v-model="formInline.domain" size="large"  placeholder="例：www.baidu.com"/>
             </FormItem>
             <FormItem>
-                <Button>分析</Button>
+                <Button @click="toAnalyze">分析</Button>
             </FormItem>
         </Form>
         </div>
@@ -65,6 +65,7 @@
 
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
+    import {CreateElement} from 'vue';
     import {API} from '@/api/m_ips';
 
     @Component({
@@ -72,6 +73,25 @@
         }
     })
     export default class Search extends Vue {
+        evaluation :any= {};
+        // 处理分析逻辑
+        toAnalyze(){
+            if (!this.formInline.domain) {
+                this.$Message.warning('你尚未输入内容！');
+                return;
+            }
+            if (this.$store.state.userName){
+                // 分析网站URL
+                API.getRequest('/api/eve/eve_board',{url: this.formInline.domain}).then(success => {
+                    console.log(success)
+                }).catch( err => {
+                    this.$Message.error(err);
+                })
+                // this.$router.push({name:'home',params:{evaluation:this.evaluation}});
+            } else {
+                this.$Message.info('请先登录');
+            }
+        }
         topToolTip:string = '未登录';
         modal_loading:boolean = false;
         // 登陆
@@ -79,7 +99,7 @@
             if (this.loginForm.username && this.loginForm.password){
                 API.postRequest('/api/eve/eve_login',this.loginForm).then( (success:any) =>{
                     this.$Message.info('登录成功');
-                    this.topToolTip='以登录';
+                    this.topToolTip=`${this.$store.state.userName}, 退出`;
                     this.$store.commit('setUserInfo',{userName:this.loginForm.username,token:success.token})
                     this.modal = false;
                 }).catch(err => {
@@ -89,7 +109,7 @@
                 this.$Message.info('用户名或密码格式不对！')
             }
         }
-        formInline:object = {
+        formInline:any = {
             domain: ''
         }
         loginForm = {
@@ -97,12 +117,26 @@
             password:''
         }
         modal:boolean = false;
-        login(){
-            this.modal = true;
+        login(value:string){
+            if (value){
+                this.$Modal.confirm({
+                    title:'确定是否退出',
+                    onOk:()=>{
+                        this.$store.commit('setUserInfo',{userName:'',token:''});
+                        this.$Message.info('退出登录成功！');
+                        this.topToolTip = '登录';
+                    },
+                    onCancel:()=>{
+
+                    }
+                })
+            }else {
+                this.modal = true;
+            }
         }
         mounted() {
             if (this.$store.state.userName){
-                this.topToolTip='以登录';
+                this.topToolTip=`${this.$store.state.userName}, 退出`;
             }
             let canvas:any = document.getElementById("cas");
             let ctx = canvas.getContext("2d");

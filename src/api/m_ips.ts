@@ -73,6 +73,7 @@ const getRequest = function (url:string, params:object) {
         instance.get(url, { params: params }).then(success => {
             resolve(success.data)
         }).catch(err => {
+            console.log(err)
             reject(err.response.data.message)
         })
     })

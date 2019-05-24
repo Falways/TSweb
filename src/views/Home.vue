@@ -1,4 +1,4 @@
-<style lang="less">
+<style lang="less" scoped>
     .accessBoard{
         width: 1000px;
         display: inline-block;
@@ -59,11 +59,11 @@
     <div>
         <h1 class="title">IPv6转换规模与复杂度与评估报告</h1>
         <div style="margin-top: 15px;color: #42b983;font-size: 14px">
-            <span>评测时间：{{new Date()}}</span>
+            <span>评测时间：{{new Date().Format('yyyy:MM:dd hh:mm:ss')}}</span>
             <Button type="success" style="margin-left: 10px">下载PDF</Button>
         </div>
         <div class="main">
-            <Table border stripe :columns="columns" :data="data"></Table>
+            <Table border stripe :columns="columns" :data="v46Data"></Table>
             <div class="h2socre">评估结果：该网站{{showMessage}}，综合评分<span v-bind:style="{color:socreColor}">{{score}}</span>分</div>
         </div>
 
@@ -88,8 +88,6 @@
     import {Component, Vue} from 'vue-property-decorator';
     import {CreateElement} from 'vue';
     //import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
-
-
 
     @Component({
         // 注册钩子函数
@@ -145,8 +143,8 @@
                             class: 'subCol'
                         }
                     }, [
-                        h('url', this.linksData[params.index].list.map(item => {
-                            return h('li', {}, item.link)
+                        h('ul', this.linksData[params.index].list.map((item:string) => {
+                            return h('li', {}, item)
                         }))
                     ])
 
@@ -155,15 +153,29 @@
             {
                 title:'总计',
                 align:'center',
-                key:'linksCount'
+                key:'total'
             }
         ];
         linksData: LinkModel[] = [
+            {
+                total:10,
+                list:['www.baidu.com','www.baidu.com','www.baidu.com','www.baidu.com']
+            }
 
         ];
         score:number=40;
         // 定义Table Data
-        data: object[] = [];
+        v46Data: object[] = [
+            {
+                url:'www.baidu.com',
+                supportV4:'是',
+                supportV6:'否',
+                ipv4_http:'是',
+                ipv4_https:'是',
+                ipv6_http:'是',
+                ipv6_https:'是',
+            }
+        ];
         // 定义表格 columns
         showMessage: string = '不支持IPv6'
         socreColor: string = 'red';

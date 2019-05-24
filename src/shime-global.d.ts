@@ -7,3 +7,4 @@ interface APIResult<T> {
     msg: string
     data?: T
 }
+
