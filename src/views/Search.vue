@@ -108,8 +108,8 @@
             if (this.loginForm.username && this.loginForm.password){
                 API.postRequest('/api/eve/eve_login',this.loginForm).then( (success:any) =>{
                     this.$Message.info('登录成功');
-                    this.topToolTip=`${this.$store.state.userName}, 退出`;
                     this.$store.commit('setUserInfo',{userName:this.loginForm.username,token:success.token})
+                    this.topToolTip=`${this.$store.state.userName}, 退出`;
                     this.modal = false;
                 }).catch( err => {
                     this.$Message.error('登录信息有误，请重新登录')
