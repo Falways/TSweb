@@ -5,6 +5,9 @@ import store from './store/store'
 import iView from 'iview'
 import 'iview/dist/styles/iview.css';
 
+import htmlToPdf from './utils/util';
+Vue.use(htmlToPdf)
+
 Vue.use(iView);
 Vue.config.productionTip = false
 

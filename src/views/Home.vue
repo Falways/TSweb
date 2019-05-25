@@ -36,31 +36,21 @@
             font-weight: bold;
         }
     }
-    .subCol>ul>li{
-        margin:0 -18px;
-        list-style:none;
-        text-Align: center;
-        padding: 9px;
-        border-bottom:1px solid #ccc;
-        overflow-x: hidden;
-    }
-    .subCol>ul>li:last-child {
-        border-bottom: none
-    }
     .detail{
         width: 1000px;
         height: 100%;
         margin-top: 20px;
         display: inline-block;
+        margin-bottom: 90px;
     }
 </style>
 
 <template>
-    <div>
+    <div id="pdfDom">
         <h1 class="title">IPv6转换规模与复杂度与评估报告</h1>
         <div style="margin-top: 15px;color: #42b983;font-size: 14px">
             <span>评测时间：{{new Date().Format('yyyy:MM:dd hh:mm:ss')}}</span>
-            <Button type="success" style="margin-left: 10px">下载PDF</Button>
+            <Button v-if="showDownloadBtn" type="success" style="margin-left: 10px" @click="downLoad()">下载PDF</Button>
         </div>
         <div class="main">
             <Table border stripe :columns="columns" :data="v46Data"></Table>
@@ -74,7 +64,7 @@
 
         <div class="detail">
             <h1>IPv6转换复杂度评估</h1>
-            <Table :columns="detailColumns" :data="detailData"></Table>
+            <Table border stripe :columns="detailColumns" :data="detailData"></Table>
         </div>
 
         <div class="login-footer">
@@ -99,7 +89,12 @@
         created () {}
     })
     export default class Home extends Vue {
-
+        htmlTitle:string ='IPv6转换规模与复杂度与评估报告';
+        showDownloadBtn:boolean = true;
+        downLoad(){
+            this.showDownloadBtn = false;
+            Vue.prototype.getPdf()
+        }
         detailColumns:object[]= [
             {
                 title:'序号',
@@ -129,22 +124,51 @@
             }
         ];
         detailData: any[] = [
-
+           /* {
+                evaluateProject:'支持HTTPS',
+                number:'1',
+                coefficient:'1000',
+                evaluateValue:'1000'
+            },
+            {
+                evaluateProject:'IP链接',
+                number:'20',
+                coefficient:'100',
+                evaluateValue:'2000'
+            }*/
         ];
+
         detailLinksColumns: object[]=[
             {
-                title:'二级站点数目',
+                title:'二级站点',
                 width:'800',
                 key:'link',
                 render:(h:CreateElement,params :any) => {
+                    let linkArray = params.row.list;
+                    return h('div',[
+                        h('ul', linkArray.map((item:any,index:any) => {
+                            if(index+1==linkArray.length){
+                                return h('li', {
+                                    style:{
+                                        'margin':'0 -18px',
+                                        'list-style':'none',
+                                        'padding': '9px 9px 9px 20px',
+                                        'border-bottom':"none",
+                                        'overflow-x': "hidden"
+                                    }
+                                }, item)
+                            }else {
+                                return h('li', {
+                                    style:{
+                                        'margin':'0 -18px',
+                                        'list-style':'none',
+                                        'padding': '9px 9px 9px 20px',
+                                        'border-bottom':"1px solid #EEEEEE",
+                                        'overflow-x': "hidden"
+                                    }
+                                }, item)
+                            }
 
-                    return h('div', {
-                        attrs: {
-                            class: 'subCol'
-                        }
-                    }, [
-                        h('ul', this.linksData[params.index].list.map((item:string) => {
-                            return h('li', {}, item)
                         }))
                     ])
 
@@ -156,17 +180,11 @@
                 key:'total'
             }
         ];
-        linksData: LinkModel[] = [
-            {
-                total:10,
-                list:['www.baidu.com','www.baidu.com','www.baidu.com','www.baidu.com']
-            }
-
-        ];
+        linksData: LinkModel[] = [];
         score:number=40;
         // 定义Table Data
         v46Data: object[] = [
-            {
+            /*{
                 url:'www.baidu.com',
                 supportV4:'是',
                 supportV6:'否',
@@ -174,7 +192,7 @@
                 ipv4_https:'是',
                 ipv6_http:'是',
                 ipv6_https:'是',
-            }
+            }*/
         ];
         // 定义表格 columns
         showMessage: string = '不支持IPv6'
@@ -234,8 +252,17 @@
             this.timer++
         }*/
         mounted() {
-            //this.data = [{"url":"www.superhang.top","v4addr":'aa',"v6addr":'bbb'}];
-            console.log(99999)
+            let pass:any =  this.$route.query.pass;
+            pass = pass.data;
+            console.log(pass)
+            this.detailData = pass.detail;
+            this.v46Data = pass.v46;
+            this.linksData = pass.links;
+            this.score = pass.score;
+            if (pass.score>60){
+                this.socreColor = 'green';
+            }
+
         }
 
     }

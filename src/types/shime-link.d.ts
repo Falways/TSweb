@@ -1,5 +1,5 @@
 
 interface LinkModel {
-    total: number
+    total: string
     list: any[]
 }

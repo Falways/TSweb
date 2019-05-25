@@ -32,7 +32,7 @@
                 <Input type="text" v-model="formInline.domain" size="large"  placeholder="例：www.baidu.com"/>
             </FormItem>
             <FormItem>
-                <Button @click="toAnalyze">分析</Button>
+                <Button @click="toAnalyze" :disabled="disUse">分析</Button>
             </FormItem>
         </Form>
         </div>
@@ -74,6 +74,7 @@
     })
     export default class Search extends Vue {
         evaluation :any= {};
+        disUse:boolean = false;
         // 处理分析逻辑
         toAnalyze(){
             if (!this.formInline.domain) {
@@ -81,15 +82,23 @@
                 return;
             }
             if (this.$store.state.userName){
+                this.$Message.loading({content:'系统正在分析中...',duration: 0});
+                this.disUse = true;
                 // 分析网站URL
-                API.getRequest('/api/eve/eve_board',{url: this.formInline.domain}).then(success => {
-                    console.log(success)
+                API.getRequest('/api/eve/eve_board',{url: this.formInline.domain}).then((success:any) => {
+                    this.$Message.destroy();
+                    this.$Message.success('分析成功！');
+                    this.$router.push({name:'home',query:{'pass':success}})
+                    this.disUse = false;
                 }).catch( err => {
+                    this.$Message.destroy();
                     this.$Message.error(err);
+                    this.disUse = false;
                 })
                 // this.$router.push({name:'home',params:{evaluation:this.evaluation}});
             } else {
                 this.$Message.info('请先登录');
+                this.modal = true;
             }
         }
         topToolTip:string = '未登录';
@@ -102,7 +111,7 @@
                     this.topToolTip=`${this.$store.state.userName}, 退出`;
                     this.$store.commit('setUserInfo',{userName:this.loginForm.username,token:success.token})
                     this.modal = false;
-                }).catch(err => {
+                }).catch( err => {
                     this.$Message.error('登录信息有误，请重新登录')
                 })
             } else {

@@ -1,4 +1,6 @@
 // 声明全局window对象
+import Vue from "vue/types/vue";
+
 declare var window: Window;
 declare var document: Document;
 
@@ -7,4 +9,5 @@ interface APIResult<T> {
     msg: string
     data?: T
 }
+
 
