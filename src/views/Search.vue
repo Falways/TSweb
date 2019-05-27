@@ -153,8 +153,8 @@
             window.onresize = resize;
 
             function resize() {
-                canvas.width = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth)-100;
-                canvas.height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight)-100;
+                canvas.width = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth)-30;
+                canvas.height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight)-40;
             }
 
             let RAF = (function () {

@@ -254,7 +254,7 @@
         mounted() {
             let pass:any =  this.$route.query.pass;
             pass = pass.data;
-            console.log(pass)
+            console.log(pass);
             this.detailData = pass.detail;
             this.v46Data = pass.v46;
             this.linksData = pass.links;
@@ -262,9 +262,12 @@
             if (pass.score>60){
                 this.socreColor = 'green';
             }
-
+            if (pass.v46[0].ipv6_http=='是' || pass.v46[0].ipv6_https=='是') {
+                this.showMessage ='支持IPv6';
+            }else {
+                this.showMessage ='不支持IPv6';
+            }
         }
-
     }
 </script>
 
