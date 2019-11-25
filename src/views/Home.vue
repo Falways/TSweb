@@ -43,14 +43,33 @@
         display: inline-block;
         margin-bottom: 90px;
     }
+    .gradual-enter-active, .gradual-leave-active{
+        transition: opacity .5s;
+    }
+    .gradual, .gradual-leave-to {
+        opacity: 0;
+    }
+    .gradual-in-active{
+        transition: all 600ms ease-in ;
+    }
+    .gradual-out-active{
+        transition: all 600ms ease-in ;
+    }
 </style>
 
 <template>
     <div id="pdfDom">
+        <transition name="gradual">
+            <Affix v-if="showAffix">
+                <Button type="info"  icon="ios-arrow-back" style="position: absolute;left: 5px;top: 5px;" @click="returnSearch">返回</Button>
+            </Affix>
+        </transition>
         <h1 class="title">IPv6转换规模与复杂度与评估报告</h1>
         <div style="margin-top: 15px;color: #42b983;font-size: 14px">
             <span>评测时间：{{new Date().Format('yyyy:MM:dd hh:mm:ss')}}</span>
-            <Button v-if="showDownloadBtn" type="success" style="margin-left: 10px" @click="downLoad()">下载PDF</Button>
+            <transition name="gradual">
+                <Button v-if="showDownloadBtn" type="success" style="margin-left: 10px" @click="downLoad()">下载PDF</Button>
+            </transition>
         </div>
         <div class="main">
             <Table border stripe :columns="columns" :data="v46Data"></Table>
@@ -89,11 +108,20 @@
         created () {}
     })
     export default class Home extends Vue {
+        showAffix:boolean=true;
+        returnSearch(){
+            this.$router.push({name:"search"});
+        }
         htmlTitle:string ='IPv6转换规模与复杂度与评估报告';
         showDownloadBtn:boolean = true;
         downLoad(){
+            this.showAffix = false;
             this.showDownloadBtn = false;
             Vue.prototype.getPdf()
+            setTimeout(()=>{
+                this.showAffix = true;
+                this.showDownloadBtn = true;
+            },1000)
         }
         detailColumns:object[]= [
             {
